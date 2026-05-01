@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AtliQ Mart — Promotion Analytics</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#080d17;--surface:#0f1623;--card:#141e2f;--card2:#192338;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --blue:#4fa3ff;--blue-d:rgba(79,163,255,.13);
+  --cyan:#22d3ee;--cyan-d:rgba(34,211,238,.12);
+  --green:#2ecc8a;--green-d:rgba(46,204,138,.12);
+  --red:#f16b6b;--red-d:rgba(241,107,107,.12);
+  --amber:#f5a623;--amber-d:rgba(245,166,35,.12);
+  --purple:#9b87f5;--purple-d:rgba(155,135,245,.12);
+  --teal:#14b8a6;--teal-d:rgba(20,184,166,.12);
+  --text:#dce8f0;--text2:#7a90a8;--text3:#3a4a5c;
+  --sw:220px;--hh:54px;
+  --font:'DM Sans',sans-serif;--mono:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.hdr{position:fixed;top:0;left:0;right:0;height:var(--hh);z-index:200;background:rgba(8,13,23,.92);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 1.25rem;gap:.9rem}
+.hdr-logo{display:flex;align-items:center;gap:.55rem;font-weight:700;font-size:14.5px;letter-spacing:-.3px;min-width:calc(var(--sw) - 1.25rem)}
+.logo-sq{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,#4fa3ff,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.hdr-sep{width:1px;height:26px;background:var(--border)}
+.hdr-title{font-size:13px;color:var(--text2);font-weight:500}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:.75rem}
+.live-dot{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--green)}
+.live-dot::before{content:'';width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 0 2px rgba(46,204,138,.25);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.hdr-date{font-size:11px;color:var(--text3);font-family:var(--mono)}
+.frow{position:fixed;top:var(--hh);left:var(--sw);right:0;z-index:150;background:rgba(8,13,23,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:.5rem 1.25rem;display:flex;align-items:center;gap:.75rem;flex-wrap:wrap}
+.flbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3)}
+.fbtn{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .15s;font-family:var(--font)}
+.fbtn:hover{background:var(--card2);color:var(--text)}
+.fbtn.active{background:var(--blue-d);color:var(--blue);border-color:rgba(79,163,255,.3)}
+.fbtn.diwali.active{background:var(--amber-d);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.fbtn.sankranti.active{background:var(--teal-d);color:var(--teal);border-color:rgba(20,184,166,.3)}
+.finfo{margin-left:auto;font-size:11px;color:var(--text3);font-family:var(--mono)}
+.sb{position:fixed;top:var(--hh);left:0;bottom:0;width:var(--sw);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:.9rem .65rem;gap:3px;overflow-y:auto;z-index:100}
+.sb-sec{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);padding:.6rem .7rem .25rem;margin-top:.35rem}
+.nav{display:flex;align-items:center;gap:.65rem;padding:.58rem .7rem;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text2);border:1px solid transparent;transition:all .15s;user-select:none}
+.nav:hover{background:var(--card);color:var(--text)}
+.nav.active{background:var(--blue-d);color:var(--blue);border-color:rgba(79,163,255,.2)}
+.nav-ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.nav-pg{margin-left:auto;font-size:10px;font-weight:700;color:var(--text3);font-family:var(--mono)}
+.sb-foot{margin-top:auto;border-radius:9px;padding:.75rem .85rem;background:var(--card);border:1px solid var(--border);font-size:11px;color:var(--text3);line-height:1.65}
+.sb-foot b{color:var(--text2);display:block;margin-bottom:2px}
+.main{margin-left:var(--sw);padding-top:calc(var(--hh) + 42px);min-height:100vh}
+.page{display:none;padding:1.25rem;animation:fadeUp .25s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.ph{margin-bottom:1.2rem}
+.ph-crumb{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text3);margin-bottom:.3rem}
+.ph h1{font-size:19px;font-weight:700;letter-spacing:-.4px}
+.ph p{font-size:12.5px;color:var(--text2);margin-top:.2rem}
+.krow{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin-bottom:1rem}
+.kc{background:var(--card);border-radius:11px;border:1px solid var(--border);padding:.95rem 1.05rem;position:relative;overflow:hidden;transition:all .2s}
+.kc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--kcolor,var(--blue))}
+.kc:hover{border-color:var(--border2);background:var(--card2)}
+.kc-ico{width:30px;height:30px;border-radius:8px;background:var(--kibg,var(--blue-d));display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:.65rem}
+.kc-lbl{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.2rem}
+.kc-val{font-size:22px;font-weight:700;letter-spacing:-.7px;line-height:1;color:var(--kcolor,var(--blue))}
+.kc-sub{font-size:11px;color:var(--text2);margin-top:.3rem}
+.tag{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px}
+.tag-g{background:var(--green-d);color:var(--green)}
+.tag-r{background:var(--red-d);color:var(--red)}
+.tag-b{background:var(--blue-d);color:var(--blue)}
+.tag-a{background:var(--amber-d);color:var(--amber)}
+.tag-p{background:var(--purple-d);color:var(--purple)}
+.tag-t{background:var(--teal-d);color:var(--teal)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
+.g21{display:grid;grid-template-columns:2fr 1fr;gap:.8rem;margin-bottom:.8rem}
+.cc{background:var(--card);border-radius:11px;border:1px solid var(--border);padding:1.05rem}
+.cc.full{width:100%;margin-bottom:.8rem}
+.ch{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.8rem}
+.ct{font-size:13px;font-weight:600;color:var(--text)}
+.cs{font-size:11px;color:var(--text3);margin-top:2px}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-top:.6rem;padding-top:.6rem;border-top:1px solid var(--border)}
+.li{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2)}
+.ld{width:9px;height:9px;border-radius:2px;flex-shrink:0}
+.bl{display:flex;flex-direction:column;gap:.5rem}
+.br{display:flex;align-items:center;gap:.55rem;font-size:12px}
+.blbl{flex-shrink:0;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.btrk{flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.bfll{height:100%;border-radius:3px;transition:width .6s cubic-bezier(.16,1,.3,1)}
+.bval{flex-shrink:0;text-align:right;font-weight:600;font-family:var(--mono);font-size:11px}
+.tbl-wrap{overflow-x:auto}
+table.dt{width:100%;border-collapse:collapse;font-size:12px}
+table.dt th{text-align:left;padding:.45rem .65rem;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border)}
+table.dt td{padding:.5rem .65rem;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text2)}
+table.dt tr:hover td{background:rgba(255,255,255,.02)}
+table.dt td.mono{font-family:var(--mono);font-size:11px}
+table.dt td.pos{color:var(--green);font-weight:600;font-family:var(--mono);font-size:11px}
+table.dt td.neg{color:var(--red);font-weight:600;font-family:var(--mono);font-size:11px}
+table.dt td.bold{color:var(--text);font-weight:500}
+.rk{display:inline-flex;width:19px;height:19px;border-radius:5px;background:var(--surface);color:var(--text3);align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.rk.t{background:var(--amber-d);color:var(--amber)}
+.ib{background:linear-gradient(135deg,rgba(79,163,255,.08),rgba(34,211,238,.05));border:1px solid rgba(79,163,255,.18);border-radius:9px;padding:.75rem 1rem;font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:.8rem}
+.ib strong{color:var(--blue)}
+.cmc{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
+.cmcard{background:var(--card);border-radius:11px;border:1px solid var(--border);padding:1.1rem;position:relative;overflow:hidden}
+.cmcard.win{border-color:rgba(46,204,138,.28)}
+.cmcard-glow{position:absolute;top:-20px;right:-20px;width:90px;height:90px;border-radius:50%;opacity:.07}
+.cmname{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text3);margin-bottom:.4rem}
+.cmir{font-size:34px;font-weight:700;letter-spacing:-1.5px;line-height:1;margin-bottom:.15rem}
+.cmgrid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-top:.7rem}
+.cmm{background:var(--surface);border-radius:7px;padding:.45rem .65rem}
+.cmm-l{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.cmm-v{font-size:14px;font-weight:700;margin-top:2px;font-family:var(--mono)}
+.mx{display:grid;gap:4px}
+.mxc{border-radius:6px;padding:.45rem .65rem;font-size:12px;font-weight:700;font-family:var(--mono);text-align:center;display:flex;align-items:center;justify-content:center}
+.mxh{background:var(--surface);color:var(--text3);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-family:var(--font)}
+.mxl{background:transparent;color:var(--text2);text-align:left;font-family:var(--font);font-size:12px;font-weight:500;justify-content:flex-start}
+.pbadge{display:inline-flex;align-items:center;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.pb-g{background:var(--green-d);color:var(--green)}
+.pb-b{background:var(--blue-d);color:var(--blue)}
+.pb-a{background:var(--amber-d);color:var(--amber)}
+.pb-p{background:var(--purple-d);color:var(--purple)}
+.pb-r{background:var(--red-d);color:var(--red)}
+.prog{display:flex;align-items:center;gap:7px}
+.prog-bar{height:4px;border-radius:2px;background:var(--surface);flex:1;max-width:70px}
+.prog-fill{height:100%;border-radius:2px;background:var(--green)}
+@media(max-width:900px){.g2,.g21,.cmc{grid-template-columns:1fr}.sb{width:52px}.main,.frow{margin-left:52px}.nav span:not(.nav-ico),.sb-sec,.nav-pg,.sb-foot{display:none}}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-logo"><div class="logo-sq">📊</div>AtliQ Mart</div>
+  <div class="hdr-sep"></div>
+  <span class="hdr-title">Promotion Analytics Dashboard</span>
+  <div class="hdr-right">
+    <span class="live-dot">LIVE</span>
+    <span class="hdr-date">Diwali 2023 · Sankranti 2024</span>
+  </div>
+</header>
+
+<nav class="sb">
+  <div class="sb-sec">Pages</div>
+  <div class="nav active" id="nav-overview" onclick="goPage('overview',this)"><span class="nav-ico">⬡</span><span>Overview</span><span class="nav-pg">P1</span></div>
+  <div class="nav" id="nav-campaign" onclick="goPage('campaign',this)"><span class="nav-ico">🎯</span><span>Campaign</span><span class="nav-pg">P2</span></div>
+  <div class="nav" id="nav-product" onclick="goPage('product',this)"><span class="nav-ico">📦</span><span>Products</span><span class="nav-pg">P3</span></div>
+  <div class="nav" id="nav-store" onclick="goPage('store',this)"><span class="nav-ico">🏪</span><span>Stores</span><span class="nav-pg">P4</span></div>
+  <div class="sb-foot"><b>Data Source</b>1,500 events<br>10 cities · 2 campaigns<br>5 promo types</div>
+</nav>
+
+<div class="frow">
+  <span class="flbl">Campaign</span>
+  <button class="fbtn active" id="fb-all" onclick="setFilter('all',this)">All Campaigns</button>
+  <button class="fbtn diwali" id="fb-Diwali" onclick="setFilter('Diwali',this)">🪔 Diwali 2023</button>
+  <button class="fbtn sankranti" id="fb-Sankranti" onclick="setFilter('Sankranti',this)">🪁 Sankranti 2024</button>
+  <span class="finfo" id="finfo">Showing: All 1,500 events · 10 cities</span>
+</div>
+
+<main class="main">
+
+  <!-- P1 OVERVIEW -->
+  <section class="page active" id="page-overview">
+    <div class="ph"><div class="ph-crumb">Dashboard → Overview</div><h1>Executive Overview</h1><p id="ov-sub">Combined performance — Diwali 2023 &amp; Sankranti 2024</p></div>
+    <div class="krow" id="ov-kpis"></div>
+    <div id="ov-banner"></div>
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Revenue Before vs After</div><div class="cs">₹ millions · by campaign</div></div><span class="tag tag-b" id="ov-irtag"></span></div>
+        <div style="position:relative;height:195px"><canvas id="c_revbar" role="img" aria-label="Revenue before vs after"></canvas></div>
+        <div class="leg"><div class="li"><div class="ld" style="background:#4fa3ff"></div>Revenue Before</div><div class="li"><div class="ld" style="background:#2ecc8a"></div>Revenue After</div></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Promo Type — IR%</div><div class="cs">Incremental Revenue % by format</div></div></div>
+        <div style="position:relative;height:195px"><canvas id="c_promo_ir" role="img" aria-label="IR% by promo type"></canvas></div>
+      </div>
+    </div>
+    <div class="g21">
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Revenue Share by Promo Type</div><div class="cs">Post-promotion distribution</div></div><span class="tag tag-p">Post-Promo</span></div>
+        <div style="position:relative;height:185px"><canvas id="c_donut" role="img" aria-label="Revenue share by promo type"></canvas></div>
+        <div class="leg" id="donut-leg"></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Promo Scoreboard</div><div class="cs">IR% ranking</div></div></div>
+        <div class="bl" id="ov-score" style="padding-top:.15rem"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P2 CAMPAIGN -->
+  <section class="page" id="page-campaign">
+    <div class="ph"><div class="ph-crumb">Dashboard → Campaign</div><h1>Campaign Deep Dive</h1><p>Diwali 2023 vs Sankranti 2024 — head-to-head breakdown</p></div>
+    <div class="cmc" id="camp-cards"></div>
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div><div class="ct">IR% by Promo Type per Campaign</div><div class="cs">Grouped comparison</div></div><span class="tag tag-a">Grouped</span></div>
+        <div style="position:relative;height:215px"><canvas id="c_grouped" role="img" aria-label="Grouped promo IR%"></canvas></div>
+        <div class="leg"><div class="li"><div class="ld" style="background:#f5a623"></div>Diwali 2023</div><div class="li"><div class="ld" style="background:#14b8a6"></div>Sankranti 2024</div></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Revenue Waterfall</div><div class="cs">Base + uplift per campaign</div></div></div>
+        <div style="position:relative;height:215px"><canvas id="c_waterfall" role="img" aria-label="Revenue waterfall"></canvas></div>
+        <div class="leg"><div class="li"><div class="ld" style="background:#4fa3ff"></div>Base Revenue</div><div class="li"><div class="ld" style="background:#2ecc8a"></div>Promo Uplift</div></div>
+      </div>
+    </div>
+    <div class="cc full">
+      <div class="ch"><div><div class="ct">Promo × Campaign — IR% Heat Matrix</div><div class="cs">Performance of each promo inside each campaign</div></div><span class="tag tag-t">Matrix</span></div>
+      <div id="matrix-body" style="margin-top:.4rem"></div>
+      <div style="margin-top:.75rem;display:flex;gap:14px;flex-wrap:wrap">
+        <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height:10px;background:var(--green-d);border:1px solid rgba(46,204,138,.3);border-radius:2px"></span>Strong (&gt;100%)</span>
+        <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height:10px;background:var(--amber-d);border:1px solid rgba(245,166,35,.3);border-radius:2px"></span>Moderate (0–100%)</span>
+        <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px"><span style="display:inline-block;width:10px;height:10px;background:var(--red-d);border:1px solid rgba(241,107,107,.3);border-radius:2px"></span>Negative (&lt;0%)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- P3 PRODUCTS -->
+  <section class="page" id="page-product">
+    <div class="ph"><div class="ph-crumb">Dashboard → Category &amp; Product</div><h1>Category &amp; Product Performance</h1><p id="prod-sub">Which categories and SKUs drove the most incremental revenue?</p></div>
+    <div class="krow" id="prod-kpis"></div>
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Category IR% Performance</div><div class="cs">Incremental Revenue %</div></div><span class="tag tag-g">IR%</span></div>
+        <div style="position:relative;height:205px"><canvas id="c_catir" role="img" aria-label="Category IR%"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div><div class="ct">ISU% vs IR% by Category</div><div class="cs">Volume vs revenue uplift</div></div><span class="tag tag-p">Dual</span></div>
+        <div style="position:relative;height:205px"><canvas id="c_catdual" role="img" aria-label="Category ISU vs IR"></canvas></div>
+        <div class="leg"><div class="li"><div class="ld" style="background:#9b87f5"></div>ISU%</div><div class="li"><div class="ld" style="background:#4fa3ff"></div>IR%</div></div>
+      </div>
+    </div>
+    <div class="cc full">
+      <div class="ch"><div><div class="ct">Top 10 Products by IR%</div><div class="cs">Ranked by Incremental Revenue %</div></div><span class="tag tag-a">Top 10</span></div>
+      <div style="position:relative;height:275px"><canvas id="c_prod10" role="img" aria-label="Top 10 products"></canvas></div>
+    </div>
+    <div class="cc full">
+      <div class="ch"><div><div class="ct">Product Detail Table</div><div class="cs">All top products with full metrics</div></div></div>
+      <div class="tbl-wrap"><table class="dt"><thead><tr><th>#</th><th>Product</th><th>Rev Before</th><th>Rev After</th><th>IR%</th><th>Status</th></tr></thead><tbody id="prod-tbody"></tbody></table></div>
+    </div>
+  </section>
+
+  <!-- P4 STORES -->
+  <section class="page" id="page-store">
+    <div class="ph"><div class="ph-crumb">Dashboard → Store &amp; City</div><h1>Store &amp; City Analysis</h1><p>Regional performance across South India</p></div>
+    <div class="krow" id="store-kpis"></div>
+    <div class="g2">
+      <div class="cc">
+        <div class="ch"><div><div class="ct">City Ranking by IR%</div><div class="cs">All cities sorted by performance</div></div><span class="tag tag-g">IR%</span></div>
+        <div style="position:relative;height:290px"><canvas id="c_city_rank" role="img" aria-label="City ranking by IR%"></canvas></div>
+      </div>
+      <div class="cc">
+        <div class="ch"><div><div class="ct">Revenue Uplift by City</div><div class="cs">Absolute ₹ uplift contribution</div></div></div>
+        <div class="bl" id="city-uplift" style="padding-top:.15rem"></div>
+      </div>
+    </div>
+    <div class="cc full">
+      <div class="ch"><div><div class="ct">City Performance Table</div><div class="cs">Complete metrics for all cities</div></div></div>
+      <div class="tbl-wrap"><table class="dt"><thead><tr><th>Rank</th><th>City</th><th>Rev Before</th><th>Rev After</th><th>IR%</th><th>ISU%</th><th>Uplift</th><th>Performance</th></tr></thead><tbody id="store-tbody"></tbody></table></div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// ════════════════════════════════════
+// PRE-COMPUTED DATA MODEL (3 filter states)
+// ════════════════════════════════════
+const DB = {
+  all: {
+    kpi:{rev_before:140701188,rev_after:347860150,ir:147.2,isu:108.3,events:1500,cities:10,uplift:207158962},
+    campaigns:[{name:"Diwali",rev_before:82573759,rev_after:207456209,qty_before:110319,qty_after:183404,ir:151.2,isu:66.2,uplift:124882450},{name:"Sankranti",rev_before:58127429,rev_after:140403941,qty_before:98731,qty_after:252069,ir:141.5,isu:155.3,uplift:82276512}],
+    promos:[{name:"BOGOF",rev_before:25927230,rev_after:95244220,ir:267.4,isu:270.0},{name:"500 Cashback",rev_before:66897000,rev_after:189540000,ir:183.3,isu:183.3},{name:"33% OFF",rev_before:36540540,rev_after:52204752,ir:42.9,isu:43.0},{name:"50% OFF",rev_before:2162951,rev_after:2872575,ir:32.8,isu:32.6},{name:"25% OFF",rev_before:9173467,rev_after:7998603,ir:-12.8,isu:-13.0}],
+    categories:[{name:"Home Appliances",rev_before:9483110,rev_after:34633500,ir:265.2,isu:264.4},{name:"Combo1",rev_before:66897000,rev_after:189540000,ir:183.3,isu:183.3},{name:"Home Care",rev_before:8856985,rev_after:24944175,ir:181.6,isu:106.6},{name:"Grocery & Staples",rev_before:52991852,rev_after:95615960,ir:80.4,isu:94.0},{name:"Personal Care",rev_before:2472241,rev_after:3126515,ir:26.5,isu:24.5}],
+    products:[{name:"Atliq_waterproof_Immersion_Rod",rev_before:6597360,rev_after:24158700,ir:266.2},{name:"Atliq_High_Glo_15W_LED_Bulb",rev_before:2885750,rev_after:10474800,ir:263.0},{name:"Atliq_Double_Bedsheet_set",rev_before:5001570,rev_after:17919020,ir:258.3},{name:"Atliq_Curtains",rev_before:1377600,rev_after:4895100,ir:255.3},{name:"Atliq_Home_Essential_8_Product_Combo",rev_before:66897000,rev_after:189540000,ir:183.3},{name:"Atliq_Farm_Chakki_Atta (1KG)",rev_before:10851800,rev_after:29100500,ir:168.2},{name:"Atliq_Suflower_Oil (1L)",rev_before:5599512,rev_after:14310708,ir:155.6},{name:"Atliq_Masoor_Dal (1KG)",rev_before:4478880,rev_after:6422652,ir:43.4},{name:"Atliq_Sonamasuri_Rice (10KG)",rev_before:32061660,rev_after:45782100,ir:42.8},{name:"Atliq_Doodh_Kesar_Body_Lotion (200ML)",rev_before:998830,rev_after:1334180,ir:33.6}],
+    cities:[{name:"Madurai",rev_before:10331552,rev_after:26682384,ir:158.3,isu:115.6,uplift:16350832},{name:"Bengaluru",rev_before:32943279,rev_after:83707621,ir:154.1,isu:113.8,uplift:50764342},{name:"Chennai",rev_before:26286454,rev_after:66787456,ir:154.1,isu:110.8,uplift:40501002},{name:"Vijayawada",rev_before:3587937,rev_after:9006240,ir:151.0,isu:109.7,uplift:5418303},{name:"Coimbatore",rev_before:12235954,rev_after:30404660,ir:148.5,isu:114.3,uplift:18168706},{name:"Trivandrum",rev_before:3201786,rev_after:7867846,ir:145.7,isu:110.4,uplift:4666060},{name:"Mysuru",rev_before:12946287,rev_after:31801764,ir:145.6,isu:101.8,uplift:18855477},{name:"Hyderabad",rev_before:22678681,rev_after:53519028,ir:136.0,isu:102.0,uplift:30840347},{name:"Mangalore",rev_before:5034816,rev_after:11774495,ir:133.9,isu:98.3,uplift:6739679},{name:"Visakhapatnam",rev_before:11454442,rev_after:26308656,ir:129.7,isu:97.5,uplift:14854214}],
+    matrix:[{campaign:"Diwali",promo:"25% OFF",ir:-12.2},{campaign:"Diwali",promo:"33% OFF",ir:48.1},{campaign:"Diwali",promo:"50% OFF",ir:30.9},{campaign:"Diwali",promo:"500 Cashback",ir:202.4},{campaign:"Diwali",promo:"BOGOF",ir:243.7},{campaign:"Sankranti",promo:"25% OFF",ir:-18.3},{campaign:"Sankranti",promo:"33% OFF",ir:38.9},{campaign:"Sankranti",promo:"50% OFF",ir:38.7},{campaign:"Sankranti",promo:"500 Cashback",ir:125.3},{campaign:"Sankranti",promo:"BOGOF",ir:275.3}]
+  },
+  Diwali: {
+    kpi:{rev_before:82573759,rev_after:207456209,ir:151.2,isu:66.2,events:750,cities:10,uplift:124882450},
+    campaigns:[{name:"Diwali",rev_before:82573759,rev_after:207456209,qty_before:110319,qty_after:183404,ir:151.2,isu:66.2,uplift:124882450}],
+    promos:[{name:"BOGOF",rev_before:6500210,rev_after:22342110,ir:243.7,isu:243.8},{name:"500 Cashback",rev_before:50373000,rev_after:152307000,ir:202.4,isu:202.4},{name:"33% OFF",rev_before:15818496,rev_after:23422444,ir:48.1,isu:47.9},{name:"50% OFF",rev_before:1638631,rev_after:2145447,ir:30.9,isu:31.1},{name:"25% OFF",rev_before:8243422,rev_after:7239208,ir:-12.2,isu:-12.1}],
+    categories:[{name:"Home Appliances",rev_before:3180550,rev_after:10957550,ir:244.5,isu:244.2},{name:"Combo1",rev_before:50373000,rev_after:152307000,ir:202.4,isu:202.4},{name:"Home Care",rev_before:5176720,rev_after:13009160,ir:151.3,isu:79.6},{name:"Personal Care",rev_before:1638631,rev_after:2145447,ir:30.9,isu:31.1},{name:"Grocery & Staples",rev_before:22204858,rev_after:29037052,ir:30.8,isu:18.0}],
+    products:[{name:"Atliq_waterproof_Immersion_Rod",rev_before:2055300,rev_after:7089000,ir:244.9},{name:"Atliq_High_Glo_15W_LED_Bulb",rev_before:1125250,rev_after:3868550,ir:243.8},{name:"Atliq_Curtains",rev_before:804000,rev_after:2764200,ir:243.8},{name:"Atliq_Double_Bedsheet_set",rev_before:2515660,rev_after:8620360,ir:242.7},{name:"Atliq_Home_Essential_8_Product_Combo",rev_before:50373000,rev_after:152307000,ir:202.4},{name:"Atliq_Sonamasuri_Rice (10KG)",rev_before:13505440,rev_after:20007900,ir:48.1},{name:"Atliq_Masoor_Dal (1KG)",rev_before:2313056,rev_after:3414544,ir:47.6},{name:"Atliq_Cream_Beauty_Bathing_Soap (125GM)",rev_before:323375,rev_after:425945,ir:31.7},{name:"Atliq_Body_Milk_Nourishing_Lotion (120ML)",rev_before:362230,rev_after:475090,ir:31.2},{name:"Atliq_Lime_Cool_Bathing_Bar (125GM)",rev_before:327546,rev_after:428172,ir:30.7}],
+    cities:[{name:"Madurai",rev_before:6246627,rev_after:16299718,ir:160.9,isu:69.0,uplift:10053091},{name:"Chennai",rev_before:15315013,rev_after:39448999,ir:157.6,isu:65.7,uplift:24133986},{name:"Bengaluru",rev_before:19409617,rev_after:49939737,ir:157.3,isu:69.8,uplift:30530120},{name:"Mysuru",rev_before:7739983,rev_after:19705983,ir:154.6,isu:68.6,uplift:11966000},{name:"Vijayawada",rev_before:2146456,rev_after:5460676,ir:154.4,isu:66.9,uplift:3314220},{name:"Coimbatore",rev_before:6958532,rev_after:17565204,ir:152.4,isu:68.5,uplift:10606672},{name:"Trivandrum",rev_before:1856514,rev_after:4528342,ir:143.9,isu:64.2,uplift:2671828},{name:"Hyderabad",rev_before:13250246,rev_after:31738862,ir:139.5,isu:62.7,uplift:18488616},{name:"Mangalore",rev_before:3017603,rev_after:7213857,ir:139.1,isu:60.0,uplift:4196254},{name:"Visakhapatnam",rev_before:6633168,rev_after:15554831,ir:134.5,isu:60.3,uplift:8921663}],
+    matrix:[{campaign:"Diwali",promo:"25% OFF",ir:-12.2},{campaign:"Diwali",promo:"33% OFF",ir:48.1},{campaign:"Diwali",promo:"50% OFF",ir:30.9},{campaign:"Diwali",promo:"500 Cashback",ir:202.4},{campaign:"Diwali",promo:"BOGOF",ir:243.7}]
+  },
+  Sankranti: {
+    kpi:{rev_before:58127429,rev_after:140403941,ir:141.5,isu:155.3,events:750,cities:10,uplift:82276512},
+    campaigns:[{name:"Sankranti",rev_before:58127429,rev_after:140403941,qty_before:98731,qty_after:252069,ir:141.5,isu:155.3,uplift:82276512}],
+    promos:[{name:"BOGOF",rev_before:19427020,rev_after:72902110,ir:275.3,isu:275.4},{name:"500 Cashback",rev_before:16524000,rev_after:37233000,ir:125.3,isu:125.3},{name:"33% OFF",rev_before:20722044,rev_after:28782308,ir:38.9,isu:38.9},{name:"50% OFF",rev_before:524320,rev_after:727128,ir:38.7,isu:38.6},{name:"25% OFF",rev_before:930045,rev_after:759395,ir:-18.3,isu:-18.3}],
+    categories:[{name:"Home Appliances",rev_before:6302560,rev_after:23675950,ir:275.7,isu:275.5},{name:"Home Care",rev_before:3680265,rev_after:11935015,ir:224.3,isu:162.4},{name:"Combo1",rev_before:16524000,rev_after:37233000,ir:125.3,isu:125.3},{name:"Grocery & Staples",rev_before:30786994,rev_after:66578908,ir:116.3,isu:158.2},{name:"Personal Care",rev_before:833610,rev_after:981068,ir:17.7,isu:11.5}],
+    products:[{name:"Atliq_Suflower_Oil (1L)",rev_before:3251400,rev_after:12237000,ir:276.4},{name:"Atliq_waterproof_Immersion_Rod",rev_before:4542060,rev_after:17069700,ir:275.8},{name:"Atliq_High_Glo_15W_LED_Bulb",rev_before:1760500,rev_after:6606250,ir:275.2},{name:"Atliq_Farm_Chakki_Atta (1KG)",rev_before:6813550,rev_after:25559600,ir:275.1},{name:"Atliq_Double_Bedsheet_set",rev_before:2485910,rev_after:9298660,ir:274.1},{name:"Atliq_Curtains",rev_before:573600,rev_after:2130900,ir:271.5},{name:"Atliq_Home_Essential_8_Product_Combo",rev_before:16524000,rev_after:37233000,ir:125.3},{name:"Atliq_Sonamasuri_Rice (10KG)",rev_before:18556220,rev_after:25774200,ir:38.9},{name:"Atliq_Masoor_Dal (1KG)",rev_before:2165824,rev_after:3008108,ir:38.9},{name:"Atliq_Doodh_Kesar_Body_Lotion (200ML)",rev_before:373350,rev_after:517940,ir:38.7}],
+    cities:[{name:"Madurai",rev_before:4084925,rev_after:10382666,ir:154.2,isu:167.3,uplift:6297741},{name:"Bengaluru",rev_before:13533662,rev_after:33767884,ir:149.5,isu:163.9,uplift:20234222},{name:"Chennai",rev_before:10971441,rev_after:27338457,ir:149.2,isu:161.5,uplift:16367016},{name:"Trivandrum",rev_before:1345272,rev_after:3339504,ir:148.2,isu:163.8,uplift:1994232},{name:"Vijayawada",rev_before:1441481,rev_after:3545564,ir:146.0,isu:158.4,uplift:2104083},{name:"Coimbatore",rev_before:5277422,rev_after:12839456,ir:143.3,isu:160.8,uplift:7562034},{name:"Mysuru",rev_before:5206304,rev_after:12095781,ir:132.3,isu:140.2,uplift:6889477},{name:"Hyderabad",rev_before:9428435,rev_after:21780166,ir:131.0,isu:145.8,uplift:12351731},{name:"Mangalore",rev_before:2017213,rev_after:4560638,ir:126.1,isu:140.5,uplift:2543425},{name:"Visakhapatnam",rev_before:4821274,rev_after:10753825,ir:123.0,isu:138.9,uplift:5932551}],
+    matrix:[{campaign:"Sankranti",promo:"25% OFF",ir:-18.3},{campaign:"Sankranti",promo:"33% OFF",ir:38.9},{campaign:"Sankranti",promo:"50% OFF",ir:38.7},{campaign:"Sankranti",promo:"500 Cashback",ir:125.3},{campaign:"Sankranti",promo:"BOGOF",ir:275.3}]
+  }
+};
+
+// ════════════════════════════════════
+// STATE
+// ════════════════════════════════════
+let currentFilter = 'all';
+let currentPage   = 'overview';
+const charts = {};
+
+// ════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════
+const fmtM  = v => '₹' + (v / 1e6).toFixed(1) + 'M';
+const sgn   = v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%';
+const clean = s => s.replace('Atliq_','').replace(/_/g,' ').replace(/\s*\(.*?\)/g,'').trim();
+
+Chart.defaults.font      = { family:"'DM Sans',sans-serif", size:11 };
+Chart.defaults.color     = '#7a90a8';
+Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+Chart.defaults.plugins.legend.display = false;
+
+function mk(id, cfg) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+  const el = document.getElementById(id);
+  if (!el) return;
+  charts[id] = new Chart(el.getContext('2d'), cfg);
+}
+
+// ════════════════════════════════════
+// FILTER — updates state & re-renders
+// ════════════════════════════════════
+function setFilter(val, btn) {
+  currentFilter = val;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const d = DB[val];
+  document.getElementById('finfo').textContent =
+    val === 'all'       ? `Showing: All ${d.kpi.events.toLocaleString()} events · ${d.kpi.cities} cities` :
+    val === 'Diwali'    ? 'Showing: Diwali 2023 · Nov 12–18 · 750 events' :
+                          'Showing: Sankranti 2024 · Jan 10–16 · 750 events';
+  renderPage(currentPage);
+}
+
+// ════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════
+function goPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  el.classList.add('active');
+  currentPage = name;
+  renderPage(name);
+}
+
+function renderPage(name) {
+  const d = DB[currentFilter];
+  if (name === 'overview') renderOverview(d);
+  if (name === 'campaign') renderCampaign(d);
+  if (name === 'product')  renderProduct(d);
+  if (name === 'store')    renderStore(d);
+}
+
+// ════════════════════════════════════
+// P1 — OVERVIEW
+// ════════════════════════════════════
+function renderOverview(d) {
+  const k = d.kpi;
+  document.getElementById('ov-sub').textContent =
+    currentFilter === 'all' ? 'Combined performance — Diwali 2023 & Sankranti 2024'
+    : currentFilter === 'Diwali' ? 'Diwali 2023 · Nov 12–18'
+    : 'Sankranti 2024 · Jan 10–16';
+
+  document.getElementById('ov-kpis').innerHTML = `
+    <div class="kc" style="--kcolor:var(--blue);--kibg:var(--blue-d)"><div class="kc-ico">💰</div><div class="kc-lbl">Revenue Before</div><div class="kc-val">${fmtM(k.rev_before)}</div><div class="kc-sub">Base pre-promo</div></div>
+    <div class="kc" style="--kcolor:var(--cyan);--kibg:var(--cyan-d)"><div class="kc-ico">📈</div><div class="kc-lbl">Revenue After</div><div class="kc-val" style="color:var(--cyan)">${fmtM(k.rev_after)}</div><div class="kc-sub"><span class="tag tag-g">+${fmtM(k.uplift)}</span></div></div>
+    <div class="kc" style="--kcolor:var(--green);--kibg:var(--green-d)"><div class="kc-ico">⚡</div><div class="kc-lbl">IR%</div><div class="kc-val">${sgn(k.ir)}</div><div class="kc-sub">Incremental Revenue</div></div>
+    <div class="kc" style="--kcolor:var(--purple);--kibg:var(--purple-d)"><div class="kc-ico">🛒</div><div class="kc-lbl">ISU%</div><div class="kc-val" style="color:var(--purple)">${sgn(k.isu)}</div><div class="kc-sub">Volume uplift</div></div>
+    <div class="kc" style="--kcolor:var(--amber);--kibg:var(--amber-d)"><div class="kc-ico">🎪</div><div class="kc-lbl">Events</div><div class="kc-val" style="color:var(--amber)">${k.events.toLocaleString()}</div><div class="kc-sub">${k.cities} cities</div></div>`;
+
+  document.getElementById('ov-irtag').textContent = 'IR: ' + sgn(k.ir);
+  const neg = d.promos.find(p => p.ir < 0);
+  document.getElementById('ov-banner').innerHTML = `<div class="ib"><strong>Key Finding:</strong> Revenue grew from <strong>${fmtM(k.rev_before)}</strong> to <strong>${fmtM(k.rev_after)}</strong> — IR of <strong>${sgn(k.ir)}</strong>.${neg ? ` <strong style="color:var(--red)">⚠ ${neg.name} has negative IR% (${sgn(neg.ir)}) — recommend replacing with BOGOF or Cashback.</strong>` : ''}</div>`;
+
+  mk('c_revbar', {
+    type:'bar',
+    data:{labels:d.campaigns.map(c=>c.name),datasets:[
+      {label:'Before',data:d.campaigns.map(c=>+(c.rev_before/1e6).toFixed(1)),backgroundColor:'#4fa3ff',borderRadius:5,barPercentage:.38},
+      {label:'After', data:d.campaigns.map(c=>+(c.rev_after/1e6).toFixed(1)), backgroundColor:'#2ecc8a',borderRadius:5,barPercentage:.38}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{grid:{display:false},border:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>'₹'+v+'M'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₹'+c.raw+'M'}}}}
+  });
+
+  mk('c_promo_ir', {
+    type:'bar',
+    data:{labels:d.promos.map(p=>p.name),datasets:[{data:d.promos.map(p=>p.ir),backgroundColor:d.promos.map(p=>p.ir>=100?'#2ecc8a':p.ir>=0?'#f5a623':'#f16b6b'),borderRadius:5,barPercentage:.55}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      scales:{x:{grid:{display:false},border:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>v+'%'}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' IR%: '+c.raw+'%'}}}}
+  });
+
+  const dc=['#2ecc8a','#4fa3ff','#f5a623','#9b87f5','#f16b6b'];
+  mk('c_donut', {
+    type:'doughnut',
+    data:{labels:d.promos.map(p=>p.name),datasets:[{data:d.promos.map(p=>Math.max(0,p.rev_after)),backgroundColor:dc,borderWidth:2,borderColor:'#141e2f',hoverOffset:5}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.label+': '+fmtM(c.raw)}}}}
+  });
+  const tot = d.promos.reduce((s,p)=>s+Math.max(0,p.rev_after),0);
+  document.getElementById('donut-leg').innerHTML = d.promos.map((p,i)=>`<div class="li"><div class="ld" style="background:${dc[i]}"></div>${p.name} <strong style="color:var(--text);margin-left:2px">${(p.rev_after/tot*100).toFixed(1)}%</strong></div>`).join('');
+
+  const maxIR = Math.max(...d.promos.map(p=>Math.abs(p.ir)));
+  document.getElementById('ov-score').innerHTML = d.promos.map(p=>{
+    const col = p.ir>=100?'#2ecc8a':p.ir>=0?'#f5a623':'#f16b6b';
+    const w = (Math.abs(p.ir)/maxIR*100).toFixed(0);
+    return `<div class="br"><span class="blbl" style="width:100px">${p.name}</span><div class="btrk"><div class="bfll" style="width:${w}%;background:${col}"></div></div><span class="bval" style="color:${col};width:52px">${sgn(p.ir)}</span></div>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+// P2 — CAMPAIGN
+// ════════════════════════════════════
+function renderCampaign(d) {
+  const sorted = [...d.campaigns].sort((a,b)=>b.ir-a.ir);
+  document.getElementById('camp-cards').innerHTML = sorted.map((c,i)=>{
+    const col  = c.name==='Diwali'?'var(--amber)':'var(--teal)';
+    const glow = c.name==='Diwali'?'rgba(245,166,35,.15)':'rgba(20,184,166,.15)';
+    const badge = i===0?'<span class="pbadge pb-g" style="margin-top:.4rem">👑 Top Campaign</span>':'<span class="pbadge pb-b" style="margin-top:.4rem">Strong Performer</span>';
+    return `<div class="cmcard${i===0?' win':''}">
+      <div class="cmcard-glow" style="background:${glow}"></div>
+      <div class="cmname">${c.name==='Diwali'?'🪔':'🪁'} ${c.name} ${c.name==='Diwali'?'2023 · Nov 12–18':'2024 · Jan 10–16'}</div>
+      <div class="cmir" style="color:${col}">${sgn(c.ir)}</div>
+      <div style="font-size:12px;color:var(--text2)">Incremental Revenue %</div>${badge}
+      <div class="cmgrid">
+        <div class="cmm"><div class="cmm-l">Rev Before</div><div class="cmm-v" style="color:var(--text2)">${fmtM(c.rev_before)}</div></div>
+        <div class="cmm"><div class="cmm-l">Rev After</div><div class="cmm-v" style="color:${col}">${fmtM(c.rev_after)}</div></div>
+        <div class="cmm"><div class="cmm-l">Uplift ₹</div><div class="cmm-v" style="color:var(--green)">+${fmtM(c.uplift)}</div></div>
+        <div class="cmm"><div class="cmm-l">ISU%</div><div class="cmm-v" style="color:var(--purple)">${sgn(c.isu)}</div></div>
+      </div></div>`;
+  }).join('');
+
+  // Grouped bar — always show both campaigns with available data
+  const promoOrder = ['BOGOF','500 Cashback','33% OFF','50% OFF','25% OFF'];
+  const sets = [];
+  if (currentFilter !== 'Sankranti') {
+    sets.push({label:'Diwali',data:promoOrder.map(p=>{const r=DB.Diwali.promos.find(x=>x.name===p);return r?r.ir:null;}),backgroundColor:'#f5a623',borderRadius:4,barPercentage:.4});
+  }
+  if (currentFilter !== 'Diwali') {
+    sets.push({label:'Sankranti',data:promoOrder.map(p=>{const r=DB.Sankranti.promos.find(x=>x.name===p);return r?r.ir:null;}),backgroundColor:'#14b8a6',borderRadius:4,barPercentage:.4});
+  }
+  mk('c_grouped',{type:'bar',data:{labels:promoOrder,datasets:sets},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},border:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>v+'%'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw+'%'}}}}});
+
+  // Waterfall
+  const wl=[],wb=[],wu=[];
+  d.campaigns.forEach(c=>{wl.push(c.name+' Base');wb.push(+(c.rev_before/1e6).toFixed(1));wu.push(0);wl.push(c.name+' Uplift');wb.push(0);wu.push(+(c.uplift/1e6).toFixed(1));});
+  mk('c_waterfall',{type:'bar',data:{labels:wl,datasets:[{label:'Base',data:wb,backgroundColor:'#4fa3ff',borderRadius:4,barPercentage:.55},{label:'Uplift',data:wu,backgroundColor:'#2ecc8a',borderRadius:4,barPercentage:.55}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},border:{display:false},ticks:{maxRotation:30,font:{size:10}}},y:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>'₹'+v+'M'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ₹'+c.raw+'M'}}}}});
+
+  // Matrix
+  const promos = ['BOGOF','500 Cashback','33% OFF','50% OFF','25% OFF'];
+  const camps  = [...new Set(d.matrix.map(x=>x.campaign))];
+  let html = `<div class="mx" style="grid-template-columns:140px ${camps.map(()=>'1fr').join(' ')}">`;
+  html += `<div class="mxc mxh">Promo Type</div>`;
+  camps.forEach(c=>html+=`<div class="mxc mxh">${c==='Diwali'?'🪔 ':'🪁 '}${c}</div>`);
+  promos.forEach(p=>{
+    html+=`<div class="mxc mxl">${p}</div>`;
+    camps.forEach(c=>{
+      const rec=d.matrix.find(x=>x.campaign===c&&x.promo===p);
+      if(rec){const v=rec.ir;const[bg,col]=v>=100?['var(--green-d)','var(--green)']:v>=0?['var(--amber-d)','var(--amber)']:['var(--red-d)','var(--red)'];html+=`<div class="mxc" style="background:${bg};color:${col};border:1px solid ${bg}">${sgn(v)}</div>`;}
+      else html+=`<div class="mxc" style="color:var(--text3)">—</div>`;
+    });
+  });
+  html+='</div>';
+  document.getElementById('matrix-body').innerHTML=html;
+}
+
+// ════════════════════════════════════
+// P3 — PRODUCTS
+// ════════════════════════════════════
+function renderProduct(d) {
+  document.getElementById('prod-sub').textContent =
+    currentFilter==='all'?'Which categories and SKUs drove the most incremental revenue?':
+    `Filtered: ${currentFilter} campaign only`;
+
+  const topC=d.categories[0], botC=d.categories[d.categories.length-1], topP=d.products[0];
+  document.getElementById('prod-kpis').innerHTML=`
+    <div class="kc" style="--kcolor:var(--green);--kibg:var(--green-d)"><div class="kc-ico">🏆</div><div class="kc-lbl">Top Category IR%</div><div class="kc-val">${sgn(topC.ir)}</div><div class="kc-sub">${topC.name}</div></div>
+    <div class="kc" style="--kcolor:var(--amber);--kibg:var(--amber-d)"><div class="kc-ico">⭐</div><div class="kc-lbl">Top Product IR%</div><div class="kc-val" style="color:var(--amber)">${sgn(topP.ir)}</div><div class="kc-sub">${clean(topP.name)}</div></div>
+    <div class="kc" style="--kcolor:var(--red);--kibg:var(--red-d)"><div class="kc-ico">⚠️</div><div class="kc-lbl">Weakest Category</div><div class="kc-val" style="color:var(--red)">${sgn(botC.ir)}</div><div class="kc-sub">${botC.name}</div></div>
+    <div class="kc" style="--kcolor:var(--purple);--kibg:var(--purple-d)"><div class="kc-ico">📦</div><div class="kc-lbl">Categories</div><div class="kc-val" style="color:var(--purple)">${d.categories.length}</div><div class="kc-sub">In this view</div></div>`;
+
+  mk('c_catir',{type:'bar',data:{labels:d.categories.map(c=>c.name),datasets:[{data:d.categories.map(c=>c.ir),backgroundColor:d.categories.map(c=>c.ir>=200?'#2ecc8a':c.ir>=100?'#4fa3ff':c.ir>=50?'#f5a623':'#f16b6b'),borderRadius:5,barPercentage:.55}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>v+'%'}},y:{grid:{display:false},border:{display:false}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' IR%: '+c.raw+'%'}}}}});
+
+  mk('c_catdual',{type:'bar',data:{labels:d.categories.map(c=>c.name.substring(0,12)),datasets:[{label:'ISU%',data:d.categories.map(c=>c.isu),backgroundColor:'rgba(155,135,245,.75)',borderRadius:3,barPercentage:.4},{label:'IR%',data:d.categories.map(c=>c.ir),backgroundColor:'rgba(79,163,255,.75)',borderRadius:3,barPercentage:.4}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{display:false},border:{display:false}},y:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>v+'%'}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' '+c.dataset.label+': '+c.raw+'%'}}}}});
+
+  mk('c_prod10',{type:'bar',data:{labels:d.products.map(p=>clean(p.name)),datasets:[{data:d.products.map(p=>p.ir),backgroundColor:d.products.map(p=>p.ir>=200?'#2ecc8a':p.ir>=100?'#4fa3ff':p.ir>=50?'#f5a623':'#9b87f5'),borderRadius:5,barPercentage:.6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},ticks:{callback:v=>'+'+v+'%'}},y:{grid:{display:false},border:{display:false},ticks:{font:{size:10}}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' IR%: +'+c.raw+'%'}}}}});
+
+  document.getElementById('prod-tbody').innerHTML=d.products.map((p,i)=>{
+    const b=p.ir>=200?'<span class="pbadge pb-g">Excellent</span>':p.ir>=100?'<span class="pbadge pb-b">Strong</span>':p.ir>=40?'<span class="pbadge pb-a">Moderate</span>':'<span class="pbadge pb-p">Low</span>';
+    return `<tr><td><span class="rk ${i<3?'t':''}">${i+1}</span></td><td class="bold">${clean(p.name)}</td><td class="mono">${fmtM(p.rev_before)}</td><td class="mono">${fmtM(p.rev_after)}</td><td class="${p.ir>=0?'pos':'neg'}">${sgn(p.ir)}</td><td>${b}</td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+// P4 — STORES
+// ════════════════════════════════════
+function renderStore(d) {
+  const top=d.cities[0], bot=d.cities[d.cities.length-1], topUp=[...d.cities].sort((a,b)=>b.uplift-a.uplift)[0];
+  document.getElementById('store-kpis').innerHTML=`
+    <div class="kc" style="--kcolor:var(--green);--kibg:var(--green-d)"><div class="kc-ico">🥇</div><div class="kc-lbl">Best City IR%</div><div class="kc-val">${sgn(top.ir)}</div><div class="kc-sub">${top.name}</div></div>
+    <div class="kc" style="--kcolor:var(--blue);--kibg:var(--blue-d)"><div class="kc-ico">💎</div><div class="kc-lbl">Highest Uplift</div><div class="kc-val" style="color:var(--blue)">${fmtM(topUp.uplift)}</div><div class="kc-sub">${topUp.name}</div></div>
+    <div class="kc" style="--kcolor:var(--amber);--kibg:var(--amber-d)"><div class="kc-ico">🗺️</div><div class="kc-lbl">Cities</div><div class="kc-val" style="color:var(--amber)">${d.cities.length}</div><div class="kc-sub">South India</div></div>
+    <div class="kc" style="--kcolor:var(--red);--kibg:var(--red-d)"><div class="kc-ico">📍</div><div class="kc-lbl">Lowest IR%</div><div class="kc-val" style="color:var(--red)">${sgn(bot.ir)}</div><div class="kc-sub">${bot.name}</div></div>`;
+
+  mk('c_city_rank',{type:'bar',data:{labels:d.cities.map(c=>c.name),datasets:[{data:d.cities.map(c=>c.ir),backgroundColor:d.cities.map((_,i)=>i===0?'#2ecc8a':i<3?'#4fa3ff':'#9b87f5'),borderRadius:5,barPercentage:.6}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',scales:{x:{grid:{color:'rgba(255,255,255,0.04)'},border:{display:false},min:Math.floor(bot.ir*0.97),ticks:{callback:v=>'+'+v+'%'}},y:{grid:{display:false},border:{display:false}}},plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' IR%: +'+c.raw+'%'}}}}});
+
+  const maxUp=Math.max(...d.cities.map(c=>c.uplift));
+  document.getElementById('city-uplift').innerHTML=d.cities.map(c=>{
+    const w=(c.uplift/maxUp*100).toFixed(0);
+    const col=c.uplift>30e6?'#2ecc8a':c.uplift>10e6?'#4fa3ff':'#9b87f5';
+    return `<div class="br"><span class="blbl" style="width:95px">${c.name}</span><div class="btrk"><div class="bfll" style="width:${w}%;background:${col}"></div></div><span class="bval" style="color:${col};width:55px">${fmtM(c.uplift)}</span></div>`;
+  }).join('');
+
+  document.getElementById('store-tbody').innerHTML=d.cities.map((c,i)=>{
+    const pw=(c.ir/(d.cities[0].ir*1.05)*100).toFixed(0);
+    return `<tr><td><span class="rk ${i<3?'t':''}">${i+1}</span></td><td class="bold">${c.name}</td><td class="mono">${fmtM(c.rev_before)}</td><td class="mono">${fmtM(c.rev_after)}</td><td class="pos">${sgn(c.ir)}</td><td class="pos">${sgn(c.isu)}</td><td class="pos">${fmtM(c.uplift)}</td><td><div class="prog"><div class="prog-bar"><div class="prog-fill" style="width:${pw}%"></div></div><span style="font-size:10px;color:var(--text3)">${pw}%</span></div></td></tr>`;
+  }).join('');
+}
+
+// ════════════════════════════════════
+// INIT
+// ════════════════════════════════════
+window.addEventListener('load', () => renderPage('overview'));
+</script>
+</body>
+</html>
