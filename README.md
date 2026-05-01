@@ -4,30 +4,30 @@
 AtliQ Mart, a retail chain with 50+ supermarkets in South India, ran major promotions during Diwali 2023 and Sankranti 2024.
 
 The Sales Director wanted to understand:
-- Which promotions performed well
-- Which products and categories drove growth
-- What should be improved for future campaigns
+- Which promotions performed well  
+- Which products and categories drove growth  
+- What should be improved for future campaigns  
 
-This project focuses on analyzing promotional performance and providing actionable business insights.
+📄 Based on Codebasics Resume Challenge  
 
 ---
 
 ## 🧠 Business Context
-All stores ran promotions on AtliQ branded products during festive seasons.
+All stores run promotional campaigns on AtliQ branded products during festive seasons.
 
 The goal was to:
-- Evaluate sales performance before and after promotions
-- Identify high-performing campaigns
-- Support data-driven decision making
-
-📄 Source: Codebasics Resume Challenge  
+- Compare performance before vs after promotions  
+- Identify high-performing campaigns  
+- Support data-driven business decisions  
 
 ---
 
-## 🛠️ Tools Used
-- 🗄️ SQL (MySQL)
-- 📊 Power BI
-- 📑 Excel
+## 🛠️ Tools & Technologies
+
+- 🗄️ SQL (MySQL) → Data analysis & business queries  
+- 📊 Power BI → Dashboard & visualization  
+- 📑 Excel → Data exploration  
+- 🤖 AI (Claude / LLM) → Dashboard design & layout planning  
 
 ---
 
@@ -35,66 +35,77 @@ The goal was to:
 
 | Table Name     | Description |
 |----------------|------------|
-| dim_campaigns  | Campaign details (name, duration) |
-| dim_products   | Product info (category, name) |
-| dim_stores     | Store locations (city) |
-| fact_events    | Sales, promotions, quantities |
+| dim_campaigns  | Campaign details |
+| dim_products   | Product info |
+| dim_stores     | Store locations |
+| fact_events    | Sales & promotion data |
 
 ---
 
-## 📌 Key Metrics Used
+## 📌 Key Metrics
 
-- **Revenue** = Base Price × Quantity Sold  
-- **ISU% (Incremental Sold Quantity)**  
-  → Change in quantity after promotion  
-- **IR% (Incremental Revenue)**  
-  → Change in revenue after promotion  
+- **Revenue** = Price × Quantity  
+- **ISU%** → Change in quantity sold  
+- **IR%** → Change in revenue  
 
 ---
 
 ## ❓ Business Questions Solved
 
-1. High-value products under BOGOF promotion  
+1. High-value BOGOF products  
 2. Store distribution by city  
-3. Campaign-wise revenue before & after promotion  
-4. Category performance using ISU% with ranking  
-5. Top 5 products based on IR%  
+3. Campaign revenue analysis  
+4. Category performance using ISU%  
+5. Top products based on IR%  
 
 ---
 
 ## 📊 Dashboard
 
-🔗 **Power BI Dashboard:** *(Add your link here)*  
+🔗 **Interactive Dashboard (Dark Theme UI):**  
+👉 *(file:///C:/Users/91205/OneDrive/codebasic%20rpc%20project/C9_Input_Files/atliqmart_dashboard_v2.html) 
 
-### Dashboard Highlights:
-- Revenue comparison (Before vs After Promotion)
-- Campaign performance analysis
-- Category-wise ISU%
-- Top performing products (IR%)
+### 📌 Dashboard Overview
+
+The dashboard is designed in **4 clean pages**:
+
+- **Overview** → Revenue, IR%, ISU% summary  
+- **Campaign Analysis** → Diwali vs Sankranti performance  
+- **Product & Category** → Top products, category insights  
+- **Store Analysis** → City-level performance  
+
+### 🎨 Design Highlights
+- Dark professional theme  
+- KPI cards + interactive charts  
+- Campaign filters (Diwali / Sankranti)  
+- Business-focused layout (not just visuals)
 
 ---
 
 ## 📈 Key Insights
 
-- BOGOF promotions performed well for high-priced products  
-- Certain categories showed strong growth in quantity sold (high ISU%)  
-- Some campaigns increased sales volume but not revenue  
-- Top 5 products contributed significantly to incremental revenue  
+Based on analysis and recommended insights :contentReference[oaicite:3]{index=3}:
+
+- BOGOF and Cashback promotions generated highest revenue growth  
+- Some discount-based promotions resulted in **negative IR%**  
+- Certain categories showed strong volume growth (high ISU%) but lower revenue impact  
+- Top products contributed major share in incremental revenue  
+- City-level performance varied significantly → opportunity for targeted strategies  
 
 ---
 
 ## 🎯 Outcome
 
 This project helps stakeholders:
-- Identify successful promotions  
-- Optimize pricing and campaign strategies  
-- Improve future sales performance  
+- Identify best-performing promotions  
+- Improve pricing & discount strategies  
+- Optimize future campaign planning  
 
 ---
 
 ## 🚀 About Me
 
-I am a Data Analyst passionate about solving real-world business problems using data.
+I am a Data Analyst focused on solving real business problems using data.
 
-🔗 LinkedIn: *https://www.linkedin.com/in/harsh-g-analyst/*  
-🔗 Portfolio: *https://codebasics.io/portfolio/Harsh-gupta*  
+🔗 LinkedIn: https://www.linkedin.com/in/harsh-g-analyst/
+🔗 Portfolio: https://codebasics.io/portfolio/Harsh-gupta  
