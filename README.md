@@ -63,7 +63,7 @@ The goal was to:
 ## 📊 Dashboard
 
 🔗 **Interactive Dashboard (Dark Theme UI):**  
-👉 *(file:///C:/Users/91205/OneDrive/codebasic%20rpc%20project/C9_Input_Files/atliqmart_dashboard_v2.html) 
+👉 https://atliq-dashboard.netlify.app/ 
 
 ### 📌 Dashboard Overview
 
